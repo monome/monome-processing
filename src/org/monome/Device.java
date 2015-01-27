@@ -82,9 +82,9 @@ public class Device {
 				msg.add(yOffset * 8);
 				for (int y = 0; y < 8; y++) {
 					int row = 0;
+					int iY = yOffset * 8 + y;
 					for (int x = 0; x < 8; x++) {
-						int iX = xOffset + x;
-						int iY = yOffset + y;
+						int iX = xOffset * 8 + x;
 						if (led[iY][iX] > 0) {
 							row += 1 << x;
 						}
@@ -103,9 +103,9 @@ public class Device {
 				msg.add(xOffset * 8);
 				msg.add(yOffset * 8);
 				for (int y = 0; y < 8; y++) {
+					int iY = yOffset * 8 + y;
 					for (int x = 0; x < 8; x++) {
-						int iX = xOffset + x;
-						int iY = yOffset + y;
+						int iX = xOffset * 8 + x;
 						msg.add(led[iY][iX]);						
 					}
 				}
