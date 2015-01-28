@@ -18,7 +18,8 @@ public class Monome {
 	private int remotePort = 12002;
 	private String activeId;
 	private Device activeDevice;
-	private Method pressMethod;
+	private Method keyMethod;
+	private Method deltaMethod;
 	
 	private HashMap<String, Device> devices = new HashMap<String, Device>();
 	
@@ -34,12 +35,6 @@ public class Monome {
 		listenAddress = osc.ip();
 		discover();
 		addNotifyListener();
-		Class args[] = new Class[] {int.class, int.class, int.class};
-		try {
-			pressMethod = parent.getClass().getDeclaredMethod("press", args);
-		} catch (NoSuchMethodException e) {
-			System.out.println("warning: press(int, int, int) method not defined");
-		}
 	}
 		
 	public void oscEvent(OscMessage msg) {
@@ -61,24 +56,31 @@ public class Monome {
 		if (activeId.equals("first_device")) {
 			activeId = id;
 		}
+		if (!id.equals(activeId)) {
+			return;
+		}
 		String type = msg.get(1).stringValue();
 		int port = msg.get(2).intValue();
 		Device device = devices.get(id);
 		if (device == null) {
-			device = new Device(id, type, port);
+			if (type.contains("monome arc")) {
+				String[] pieces = type.split(" ");
+				int encoders = Integer.parseInt(pieces[2]);
+				device = new Arc(id, type, port, encoders);
+				device.deltaListener = this;
+				addArcCallbacks();
+			} else {
+				device = new Grid(id, type, port);
+				addGridCallbacks();
+			}
+			device.keyListener = this;
 			devices.put(id, device);
 		} else {
 			device.type = type;
 			device.port = port;
 		}
-		device.getInfo();
-		if (id.equals(activeId)) { 
-			if (activeDevice != null) {
-				activeDevice.pressListener = null;
-			}
-			activeDevice = device;
-			activeDevice.pressListener = this;
-		}
+		device.initDevice();
+		activeDevice = device;
 	}
 
 	private void discover() {
@@ -106,12 +108,54 @@ public class Monome {
 		}
 	}
 	
-	public void onPress(Object[] args) {
-		if (pressMethod == null) {
+	public void refresh(int encoder, int[] led) {
+		if (activeDevice == null) {
+			return;
+		}
+		activeDevice.levelMap(encoder, led);
+	}
+	
+	private void addGridCallbacks() {
+		Class args[] = new Class[] {int.class, int.class, int.class};
+		try {
+			keyMethod = parent.getClass().getDeclaredMethod("key", args);
+		} catch (NoSuchMethodException e) {
+		}
+	}
+	
+	private void addArcCallbacks() {
+		Class args[] = new Class[] {int.class, int.class};
+		try {
+			keyMethod = parent.getClass().getDeclaredMethod("key", args);
+		} catch (NoSuchMethodException e) {
+		}
+		try {
+			deltaMethod = parent.getClass().getDeclaredMethod("delta", args);
+		} catch (NoSuchMethodException e) {
+		}
+	}
+	
+	public void onKey(Object[] args) {
+		if (keyMethod == null) {
 			return;
 		}
 		try {
-			pressMethod.invoke(parent, args);
+			keyMethod.invoke(parent, args);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+		
+	public void onDelta(Object[] args) {
+		if (deltaMethod == null) {
+			return;
+		}
+		try {
+			deltaMethod.invoke(parent, args);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
