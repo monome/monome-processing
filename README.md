@@ -116,6 +116,7 @@ public void delta(int n, int d) {
   // n is the encoder number (0-3)
   // d is the delta value
 }
+```
 
 You can also define a key method to listen for encoder key press events:
 
