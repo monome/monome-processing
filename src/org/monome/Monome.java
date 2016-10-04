@@ -65,7 +65,10 @@ public class Monome {
 		if (device == null) {
 			if (type.contains("monome arc")) {
 				String[] pieces = type.split(" ");
-				int encoders = Integer.parseInt(pieces[2]);
+				int encoders = 4;
+				if (pieces.length >= 3) {
+					encoders = Integer.parseInt(pieces[2]);
+				}
 				device = new Arc(id, type, port, encoders);
 				device.deltaListener = this;
 				addArcCallbacks();

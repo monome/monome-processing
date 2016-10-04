@@ -1,10 +1,12 @@
 import org.monome.Monome;
+import oscP5.*;
 
 Monome m;
 int[] led;
 int pos;
   
 public void setup() {
+  // Use m1100101 for new Arc
   m = new Monome(this, "m0000226");
   led = new int[64];
   pos = 0;
