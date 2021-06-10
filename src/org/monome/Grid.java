@@ -15,7 +15,7 @@ public class Grid extends Device {
 		}
 		if (msg.addrPattern().equals("/sys/id")) {
 			String id = msg.get(0).stringValue();
-			String pattern = "m\\d{7}";
+			String pattern = "m\\d+";
 			if (id.matches(pattern)) {
 				varibright = true;
 			}
