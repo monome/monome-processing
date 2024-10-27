@@ -4,13 +4,13 @@ monome-processing is a library for interfacing with monome grid and arc devices 
 
 ## Setup
 
-See http://monome.github.io/grid-studies-processing for guide to getting started.  Essentially you will download and unzip the following two libraries in your processing libraries folder:
+See [monome's Processing study](https://monome.org/docs/grid/studies/processing/) for guide to getting started.  Essentially you will download and unzip the following two libraries in your processing libraries folder:
 
 monome-processing library:
 https://github.com/monome/monome-processing/releases/latest
 
-oscP5 OSC library:
-http://www.sojamo.de/libraries/oscp5
+oscP5 OSC library (**must** be version 0.9.9):
+https://github.com/sojamo/oscp5/releases/tag/0.9.9
 
 ## Example Grid Script
 
